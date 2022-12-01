@@ -27,15 +27,15 @@ public:
     return nombre;
   }
 
-  void ataquePerro(int dañoPerro) {
-    vida -= dañoPerro;
+  void ataqueEnemigo(int dañoEnemigo) {
+    vida -= dañoEnemigo;
   }
 
   void setDaño(){
     daño += 6;
   }
 
-  void esquiveExitoso(){
+  void subirDaño(){
     daño += 2;
   }
 
