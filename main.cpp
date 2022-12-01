@@ -3,7 +3,7 @@
 #include "Suerte.h"
 #include "Perro.h"
 #include "Rata.h"
-#include "CamelloTáctico.h""
+#include "CamelloTáctico.h"
 #include <iostream>
 #include <string>
 #include <cstdlib>
@@ -11,11 +11,12 @@
 
 using namespace std;
 
-void menu(int vida, int daño, string nombre) {
-  cout << nombre << " ------ " << daño << " DE DAÑO"
-       << " ------ " << vida << " PUNTOS DE VIDA" << endl;
-  cout << "¿QUÉ DESEAS HACER?" << endl;
-  cout << "1. ATACAR  2. A. COMPUESTO  3.MOCHILA  4.ESCAPE" << endl;
+void menu(int vida, int daño, string nombre, bool eleccion) {
+    if (eleccion  == true){
+      cout << nombre << " ------ " << daño << " DE DAÑO" << " ------ " << vida << " PUNTOS DE VIDA" << endl;
+      cout << "¿QUÉ DESEAS HACER?" << endl;
+      cout << "1. ATACAR  2. A. COMPUESTO  3.MOCHILA  4.ESCAPE" << endl;
+    }
 }
 
 int main() {
@@ -28,7 +29,7 @@ int main() {
   CamelloTactico camello (100, 14, "CAMELLO TÁCTICO");
   bool bate = false;
   bool juego = true;
-  bool ruda = false;
+  bool trebol = false;
   int karate = 3;
   int finta = 2;
   int yoga = 5;
@@ -42,8 +43,12 @@ int main() {
   Suerte s5(s2, 10);
   Suerte s6(s3, 10);
   Suerte ss(sp, 10);
+  string eleccion = "default";
+  bool eleccionVerif = true;
   sleep(1);
   while (juego == true){
+    if (eleccion != "default")
+      eleccion = "default";
     cout << "SELECCIONE SU DIFICULTAD:\n1. FÁCIL\n2. MEDIO\n3. DIFÍCIL" << endl;
     int eleccionD;
     cin >> eleccionD;
@@ -52,31 +57,35 @@ int main() {
     if (eleccionD == 1){
       cout << "EL " << perro << " ATACÓ" << endl;
       sleep(1);
+      bool eleccionC = true;
       while (jugador1.getVida() > 0 && perro.getVida() > 0 && escape == false) {
-        int eleccionM;
-        int eleccion;
         bool ataque = true;
-        menu(jugador1.getVida(), jugador1.getDaño(), jugador1.getNombre());
-        cin >> eleccion;
-        ataque = true;
-        if (eleccion == 1) {
+        if (eleccion == "default"){
+          menu(jugador1.getVida(), jugador1.getDaño(), jugador1.getNombre(), false);
+          getline(cin, eleccion);
+          continue;
+        }
+        menu(jugador1.getVida(), jugador1.getDaño(), jugador1.getNombre(), true);
+        getline(cin, eleccion);
+        if (eleccion == "1") {
           if (s5.throwrand() == 0){
             perro.AtaqueComun(bate);
           } else {
             perro.AtaqueCritico(bate);
             perro.setDaño((perro.getDaño())-1);
           }
-        } else if (eleccion == 2) {
-          int eleccionA;
+        } else if (eleccion == "2") {
+          string eleccionA;
           sleep(1);
           cout << "CUENTAS CON ESTOS ATAQUES ---- VECES QUE PUEDE SER USADO\n1. "
                   "MOVIMIENTO DE KARATE ------ "
                << karate << "\n2. FINTA --------------------- " << finta
                << "\n3. MOVIMIENTO DE YOGA -------- " << yoga
                << "\nPRESIONA CUALQUIER OTRO PARA VOLVER AL MENÚ" << endl;
-          cin >> eleccionA;
-          if (eleccionA == 1) {
+          getline(cin, eleccionA);
+          if (eleccionA == "1") {
             if (karate > 0) {
+              karate -= 1;
               if (s6.throwrand() == 1){
                 cout << "¡¡¡HIYAH!!!\nEL " << perro << " PERDIÓ 15 PUNTOS DE VIDA\nTE QUEDAN "
                    << karate << " VECES EN LAS QUE PUEDES USAR ESTE MOVIMIENTO"
@@ -87,41 +96,41 @@ int main() {
                    << karate << " VECES EN LAS QUE PUEDES USAR ESTE MOVIMIENTO"
                    << endl;
               }
-              karate -= 1;
               sleep(1);
             } else {
               cout << "YA NO PUEDES USAR ESTE MOVIMIENTO" << endl;
               sleep(1);
               continue;
             }
-          } else if (eleccionA == 2) {
+          } else if (eleccionA == "2") {
             if (finta > 0) {
               if (s6.throwrand() == 1){
-              cout
+                finta -= 1;
+                cout
                   << "EL " << perro << " ESTÁ CONFUNDIDO\nPERDIÓ 2 PUNTOS DE DAÑO\nTE QUEDAN "
                   << finta << " VECES EN LAS QUE PUEDES USAR ESTE MOVIMIENTO"
                   << endl;
-              perro.esquiveConfundido();
+                ataque = false;
+                perro.Confundido();
               } else {
-                cout << "¿PERO CÓMO...?\nEL " << perro << "ESQUIVÓ EL ATAQUE\nTE QUEDAN "
+                cout << "¿PERO CÓMO...?\nEL " << perro << " ESQUIVÓ EL ATAQUE\nTE QUEDAN "
                    << finta << " VECES EN LAS QUE PUEDES USAR ESTE MOVIMIENTO"
                    << endl;
               }
-              finta -= 1;
               sleep(1);
             } else {
               cout << "YA NO PUEDES USAR ESTE MOVIMIENTO" << endl;
               sleep(1);
               continue;
             }
-          } else if (eleccionA == 3){
+          } else if (eleccionA == "3"){
             if (yoga > 0) {
               yoga -= 1;
               cout << "INHALA EL FUTURO, EXHALA EL PASADO\nTU ATAQUE SUBE EN 2 "
                       "PUNTOS\nTE QUEDAN "
                    << yoga << " VECES EN LAS QUE PUEDES USAR ESTE MOVIMIENTO"
                    << endl;
-              jugador1.esquiveExitoso();
+              jugador1.subirDaño();
             } else {
               cout << "YA NO PUEDES USAR ESTE MOVIMIENTO" << endl;
               sleep(1);
@@ -130,22 +139,23 @@ int main() {
           } else {
             continue;
           }
-        } else if (eleccion == 3){
+        } else if (eleccion == "3"){
+          string eleccionM;
           cout << "ESTO SE ENCUENTRA EN TU MOCHILA:\n1. BATE\n2. BOTELLA\n3. TRÉBOL \nPRESIONA "
                   "CUALQUIER OTRO PARA VOLVER AL MENÚ"
                << endl;
-          cin >> eleccionM;
-          if (eleccionM == 1) {
+          getline(cin, eleccionM);
+          if (eleccionM == "1") {
             if (bate == false) {
               jugador1.setDaño();
               bate = true;
+              cout << "TE EQUIPASTE EL BATE" << endl;
             } else {
               cout << "YA TIENES EQUIPADO EL BATE, ¡ATACA!" << endl;
               ataque = false;
             }
             sleep(1);
-            break;
-          } else if (eleccionM == 2) {
+          } else if (eleccionM == "2") {
             if (botella == 3) {
               if (jugador1.getVida() == 100) {
                 cout << "Vaya despedicio..." << endl;
@@ -187,20 +197,20 @@ int main() {
               continue;
             }
             sleep(1);
-          } else if (eleccionM == 3) {
-            if (ruda == false){
+          } else if (eleccionM == "3") {
+            if (trebol == false){
               cout << "UNA ACTITUD POSITIVA ATRAE LA BUENA SUERTE\nTU SUERTE SUBE" << endl;
               s4.push_back(1);
               s5.push_back(1);
               s6.push_back(1);
-              ruda = true;
+              trebol = true;
             } else {
               cout << "LO MÍO NO ES SUERTE, SON PURAS BENDICIONES" << endl;
             }
           } else {
             continue;
           }
-        } else if (eleccion == 4) {
+        } else if (eleccion == "4") {
           if(s4.throwrand() == 1){
             escape = true;
             continue;
@@ -209,20 +219,22 @@ int main() {
           }
           sleep(1);
         } else {
-          cout << "ESO NO SE ENCUENTRA ENTRE LAS OPCIONES >:C" << endl;
+          if (eleccion != "")
+            cout << "ESO NO SE ENCUENTRA ENTRE LAS OPCIONES >:C" << endl;
           ataque = false;
-          sleep(1); 
+          sleep(1);
         }
         if (ataque == true && perro.getVida() >= 0) {
           if (ss.throwrand() == 1){
             cout << "\nEL " << perro << " ATACÓ, HIZO " << perro.getDaño() << " DE DAÑO\n"
                << endl;
-            jugador1.ataquePerro(perro.getDaño());
+            jugador1.ataqueEnemigo(perro.getDaño());
             sleep(1);
           } else {
             perro.Mordisco();
             jugador1.setVida(jugador1.getVida() - perro.getDientes()*2);
           }
+          eleccionC = false;
         }
       }
       if (perro.getVida() <= 0) {
@@ -243,6 +255,7 @@ int main() {
         jugador1 = jugadorcopia;
         perro = perrocopia;
         bate = false;
+        trebol = false;
         karate = 3;
         finta = 2; 
         yoga = 5;
@@ -253,6 +266,7 @@ int main() {
         s4 = s4copia;
         s5 = s5copia;
         s6 = s6copia;
+        string eleccion = "default";
         continue;
       } else{
         juego = false;
@@ -262,12 +276,16 @@ int main() {
       cout << "LA " << rata << " ATACÓ" << endl;
       sleep(1);
       while (jugador1.getVida() > 0 && rata.getVida() > 0 && escape == false) {
-        int eleccion;
+        jugador1.eneVerif();
         bool ataque = true;
-        menu(jugador1.getVida(), jugador1.getDaño(), jugador1.getNombre());
-        cin >> eleccion;
-        switch (eleccion) {
-        case 1:
+        if (eleccion == "default"){
+          menu(jugador1.getVida(), jugador1.getDaño(), jugador1.getNombre(), false);
+          getline(cin, eleccion);
+          continue;
+        }
+        menu(jugador1.getVida(), jugador1.getDaño(), jugador1.getNombre(), true);
+        getline(cin, eleccion);
+        if (eleccion == "1") {
           if (ss.throwrand() == 1){
             if (s5.throwrand() == 0){
               rata.AtaqueComun(bate);
@@ -278,20 +296,20 @@ int main() {
             cout << "LA " << rata << " ESQUIVÓ TU ATAQUE" << endl;
             sleep(1);
           }
-          break;
-        case 2:
-          int eleccionA;
+        } else if (eleccion == "2"){
           sleep(1);
           cout << "CUENTAS CON ESTOS ATAQUES ---- VECES QUE PUEDE SER USADO\n1. "
                   "MOVIMIENTO DE KARATE ------ "
                << karate << "\n2. FINTA --------------------- " << finta
                << "\n3. MOVIMIENTO DE YOGA -------- " << yoga
                << "\nPRESIONA CUALQUIER OTRO PARA VOLVER AL MENÚ" << endl;
-          cin >> eleccionA;
-          switch (eleccionA) {
-          case 1:
+          string eleccionA;
+          getline(cin, eleccionA);
+          if (eleccionA == "1"){
             if (karate > 0) {
+              karate -= 1;
               if (s6.throwrand() == 1){
+                karate -= 1;
                 cout << "¡¡¡HIYAH!!!\nLA " << rata << " PERDIÓ 15 PUNTOS DE VIDA\nTE QUEDAN "
                    << karate << " VECES EN LAS QUE PUEDES USAR ESTE MOVIMIENTO"
                    << endl;
@@ -301,7 +319,6 @@ int main() {
                    << karate << " VECES EN LAS QUE PUEDES USAR ESTE MOVIMIENTO"
                    << endl;
               }
-              karate -= 1;
               sleep(1);
               break;
             } else {
@@ -309,64 +326,61 @@ int main() {
               sleep(1);
               continue;
             }
-          case 2:
+          }else if (eleccionA == "2"){
             if (finta > 0) {
+              finta -= 1;
               if (s6.throwrand() == 1){
               cout
                   << "LA " << rata << " ESTÁ CONFUNDIDA\nPERDIÓ 2 PUNTOS DE DAÑO\nTE QUEDAN "
                   << finta << " VECES EN LAS QUE PUEDES USAR ESTE MOVIMIENTO"
                   << endl;
-              rata.esquiveConfundido();
+                ataque = false;
+              rata.Confundido();
               } else {
                 cout << "¿PERO CÓMO...?\nLA " << rata << " ESQUIVÓ EL ATAQUE\nTE QUEDAN "
                    << finta << " VECES EN LAS QUE PUEDES USAR ESTE MOVIMIENTO"
                    << endl;
               }
-              finta -= 1;
               sleep(1);
               break;
             } else {
               cout << "YA NO PUEDES USAR ESTE MOVIMIENTO" << endl;
               sleep(1);
               continue;
-            }
-          case 3:
-            if (yoga > 0) {
+          }
+        } else if (eleccion == "3"){
+          if (yoga > 0) {
               yoga -= 1;
               cout << "INHALA EL FUTURO, EXHALA EL PASADO\nTU ATAQUE SUBE EN 2 "
                       "PUNTOS\nTE QUEDAN "
                    << yoga << " VECES EN LAS QUE PUEDES USAR ESTE MOVIMIENTO"
                    << endl;
-              jugador1.esquiveExitoso();
-              break;
+              jugador1.subirDaño();
             } else {
               cout << "YA NO PUEDES USAR ESTE MOVIMIENTO" << endl;
               continue;
             }
             sleep(1);
-          default:
-            ataque = false;
-            break;
-          }
-          break;
-        case 3:
-          int eleccionM;
+        } else {
+          ataque = false;
+        } 
+    } else if (eleccion == "3"){
+          string eleccionM;
           cout << "ESTO SE ENCUENTRA EN TU MOCHILA:\n1. BATE\n2. BOTELLA\n3. TRÉBOL \nPRESIONA "
                   "CUALQUIER OTRO PARA VOLVER AL MENÚ"
                << endl;
-          cin >> eleccionM;
-          switch (eleccionM) {
-          case 1:
+          getline(cin, eleccionM);
+          if (eleccionM == "1"){
             if (bate == false) {
               jugador1.setDaño();
               bate = true;
+              cout << "TE EQUIPASTE EL BATE" << endl;
             } else {
               cout << "YA TIENES EQUIPADO EL BATE, ¡ATACA!" << endl;
               ataque = false;
             }
             sleep(1);
-            break;
-          case 2:
+          } else if (eleccionM == "2"){
             if (botella == 3) {
               if (jugador1.getVida() == 100) {
                 cout << "Vaya despedicio..." << endl;
@@ -379,7 +393,6 @@ int main() {
               }
               botella -= 1;
               cout << "LA BOTELLA ESTÁ LLENA" << endl;
-              break;
             } else if (botella == 2) {
               if (jugador1.getVida() == 100) {
                 cout << "Vaya despedicio..." << endl;
@@ -392,7 +405,6 @@ int main() {
               }
               botella -= 1;
               cout << "LA BOTELLA ESTÁ MEDIO LLENA" << endl;
-              break;
             } else if (botella == 1) {
               if (jugador1.getVida() == 100) {
                 cout << "Vaya despedicio..." << endl;
@@ -405,28 +417,25 @@ int main() {
               }
               botella -= 1;
               cout << "LA BOTELLA ESTÁ MEDIO VACÍA" << endl;
-              break;
             } else {
               cout << "MIRAS CON TRISTEZA UNA BOTELLA VACÍA" << endl;
               continue;
             }
             sleep(1);
-          case 3:
-            if (ruda == false){
+          } else if (eleccionM == "3"){
+            if (trebol == false){
               cout << "UNA ACTITUD POSITIVA ATRAE LA BUENA SUERTE\nTU SUERTE SUBE" << endl;
               s4.push_back(1);
               s5.push_back(1);
               s6.push_back(1);
-              ruda = true;
+              trebol = true;
             } else {
               cout << "LO MÍO NO ES SUERTE, SON PURAS BENDICIONES" << endl;
             }
-            break;
-          default:
+          } else {
             ataque = false;
           }
-          break;
-        case 4:
+        } else if (eleccion == "4"){
           if(s4.throwrand() == 1){
             escape = true;
             continue;
@@ -434,8 +443,7 @@ int main() {
             cout << "LA " << rata << " EVITÓ TU ESCAPE" << endl;
           }
           sleep(1);
-          break;
-        default:
+        } else {
           cout << "ESO NO SE ENCUENTRA ENTRE LAS OPCIONES >:C" << endl;
           ataque = false;
           sleep(1);
@@ -444,17 +452,17 @@ int main() {
           if (ss.throwrand() == 1){
             cout << "\nLA " << rata << " ATACÓ, HIZO " << rata.getDaño() << " DE DAÑO\n"
                << endl;
-            jugador1.ataquePerro(rata.getDaño());
+            jugador1.ataqueEnemigo(rata.getDaño());
             if (rata.PulgasConf() == false){
               cout << "¡¡¡LAS PULGAS PICAN!!!\nHACEN " << 7 - rata.getPulgas() << " DE DAÑO" << endl;
-              jugador1.ataquePerro(7 - rata.getPulgas());
+              jugador1.ataqueEnemigo(7 - rata.getPulgas());
             } 
             sleep(1);
           } else {
             rata.ataquePulgas();
             if (rata.PulgasConf() == false){
               cout << "¡¡¡LAS PULGAS PICAN!!!\nHACEN " << 7 - rata.getPulgas() << " DE DAÑO" << endl;
-              jugador1.ataquePerro(7 - rata.getPulgas());
+              jugador1.ataqueEnemigo(7 - rata.getPulgas());
             } 
           }
         }
@@ -477,6 +485,7 @@ int main() {
         jugador1 = jugadorcopia;
         rata = ratacopia;
         bate = false;
+        trebol = false;
         karate = 3;
         finta = 2; 
         yoga = 5;
@@ -484,6 +493,7 @@ int main() {
         Suerte s4copia(s1, 10);
         Suerte s5copia(s2, 10);
         Suerte s6copia(s3, 10);
+        string eleccion = "default";
         s4 = s4copia;
         s5 = s5copia;
         s6 = s6copia;
@@ -496,29 +506,33 @@ int main() {
     cout << "EL " << camello << " ATACÓ" << endl;
       sleep(1);
       while (jugador1.getVida() > 0 && camello.getVida() > 0 && escape == false) {
-        int eleccionM;
-        int eleccion;
         bool ataque = true;
-        menu(jugador1.getVida(), jugador1.getDaño(), jugador1.getNombre());
-        cin >> eleccion;
+        if (eleccion == "default"){
+          menu(jugador1.getVida(), jugador1.getDaño(), jugador1.getNombre(), false);
+          getline(cin, eleccion);
+          continue;
+        }
+        menu(jugador1.getVida(), jugador1.getDaño(), jugador1.getNombre(), true);
+        getline(cin, eleccion);
         ataque = true;
-        if (eleccion == 1) {
+        if (eleccion == "1") {
           if (s5.throwrand() == 0){
             camello.AtaqueComun(bate);
           } else {
             camello.AtaqueCritico(bate);
           }
-        } else if (eleccion == 2) {
-          int eleccionA;
+        } else if (eleccion == "2") {
+          string eleccionA;
           sleep(1);
           cout << "CUENTAS CON ESTOS ATAQUES ---- VECES QUE PUEDE SER USADO\n1. "
                   "MOVIMIENTO DE KARATE ------ "
                << karate << "\n2. FINTA --------------------- " << finta
                << "\n3. MOVIMIENTO DE YOGA -------- " << yoga
                << "\nPRESIONA CUALQUIER OTRO PARA VOLVER AL MENÚ" << endl;
-          cin >> eleccionA;
-          if (eleccionA == 1) {
+          getline(cin, eleccionA);
+          if (eleccionA == "1") {
             if (karate > 0) {
+              karate -= 1;
               if (s6.throwrand() == 1){
                 cout << "¡¡¡HIYAH!!!\nEL " << camello << " PERDIÓ 15 PUNTOS DE VIDA\nTE QUEDAN "
                    << karate << " VECES EN LAS QUE PUEDES USAR ESTE MOVIMIENTO"
@@ -529,41 +543,41 @@ int main() {
                    << karate << " VECES EN LAS QUE PUEDES USAR ESTE MOVIMIENTO"
                    << endl;
               }
-              karate -= 1;
               sleep(1);
             } else {
               cout << "YA NO PUEDES USAR ESTE MOVIMIENTO" << endl;
               sleep(1);
               continue;
             }
-          } else if (eleccionA == 2) {
+          } else if (eleccionA == "2") {
             if (finta > 0) {
+              finta -= 1;
               if (s6.throwrand() == 1){
               cout
                   << "EL " << camello << " ESTÁ CONFUNDIDO\nPERDIÓ 2 PUNTOS DE DAÑO\nTE QUEDAN "
                   << finta << " VECES EN LAS QUE PUEDES USAR ESTE MOVIMIENTO"
                   << endl;
-              camello.esquiveConfundido();
+                ataque = false;
+              camello.Confundido();
               } else {
                 cout << "¿PERO CÓMO...?\nEL " << camello << "ESQUIVÓ EL ATAQUE\nTE QUEDAN "
                    << finta << " VECES EN LAS QUE PUEDES USAR ESTE MOVIMIENTO"
                    << endl;
               }
-              finta -= 1;
               sleep(1);
             } else {
               cout << "YA NO PUEDES USAR ESTE MOVIMIENTO" << endl;
               sleep(1);
               continue;
             }
-          } else if (eleccionA == 3){
+          } else if (eleccionA == "3"){
             if (yoga > 0) {
               yoga -= 1;
               cout << "INHALA EL FUTURO, EXHALA EL PASADO\nTU ATAQUE SUBE EN 2 "
                       "PUNTOS\nTE QUEDAN "
                    << yoga << " VECES EN LAS QUE PUEDES USAR ESTE MOVIMIENTO"
                    << endl;
-              jugador1.esquiveExitoso();
+              jugador1.subirDaño();
             } else {
               cout << "YA NO PUEDES USAR ESTE MOVIMIENTO" << endl;
               sleep(1);
@@ -572,22 +586,23 @@ int main() {
           } else {
             continue;
           }
-        } else if (eleccion == 3){
+        } else if (eleccion == "3"){
+          string eleccionM;
           cout << "ESTO SE ENCUENTRA EN TU MOCHILA:\n1. BATE\n2. BOTELLA\n3. TRÉBOL \nPRESIONA "
                   "CUALQUIER OTRO PARA VOLVER AL MENÚ"
                << endl;
           cin >> eleccionM;
-          if (eleccionM == 1) {
+          if (eleccionM == "1") {
             if (bate == false) {
               jugador1.setDaño();
               bate = true;
+              cout << "TE EQUIPASTE EL BATE" << endl;
             } else {
               cout << "YA TIENES EQUIPADO EL BATE, ¡ATACA!" << endl;
               ataque = false;
             }
             sleep(1);
-            break;
-          } else if (eleccionM == 2) {
+          } else if (eleccionM == "2") {
             if (botella == 3) {
               if (jugador1.getVida() == 100) {
                 cout << "Vaya despedicio..." << endl;
@@ -629,20 +644,20 @@ int main() {
               continue;
             }
             sleep(1);
-          } else if (eleccionM == 3) {
-            if (ruda == false){
+          } else if (eleccionM == "3") {
+            if (trebol == false){
               cout << "UNA ACTITUD POSITIVA ATRAE LA BUENA SUERTE\nTU SUERTE SUBE" << endl;
               s4.push_back(1);
               s5.push_back(1);
               s6.push_back(1);
-              ruda = true;
+              trebol = true;
             } else {
               cout << "LO MÍO NO ES SUERTE, SON PURAS BENDICIONES" << endl;
             }
           } else {
             continue;
           }
-        } else if (eleccion == 4) {
+        } else if (eleccion == "4") {
           if(s4.throwrand() == 1){
             escape = true;
             continue;
@@ -656,17 +671,17 @@ int main() {
           sleep(1); 
         }
         if (ataque == true && camello.getVida() >= 0) {
-          if (camello.getVida() > 0){
+          if (camello.getVida() > 25){
             cout << "\nEL " << camello << " ATACÓ, HIZO " << camello.getDaño() << " DE DAÑO\n"
                << endl;
-            jugador1.ataquePerro(camello.getDaño());
+            jugador1.ataqueEnemigo(camello.getDaño());
             sleep(1);
           } else {
-            if (camello.getJorobas() < 0){
+            if (camello.getJorobas() > 0){
               camello.Joroba(); 
-              cout << "EL" << camello << "CONSUMIÓ GRASA ALMACENADA EN SU JOROBA\n RECUPERA 25 PUNTOS DE VIDA" << endl;
+              cout << "EL " << camello << " CONSUMIÓ GRASA ALMACENADA EN SU JOROBA\nRECUPERA 25 PUNTOS DE VIDA" << endl;
             } else {
-              cout << "EL" << camello << "SE QUEDÓ SIN GRASA Y ENTRÓ EN DEPRESIÓN" << endl;
+              cout << "EL " << camello << " SE QUEDÓ SIN GRASA Y ENTRÓ EN DEPRESIÓN" << endl;
             }
           }
         }
@@ -689,6 +704,7 @@ int main() {
         jugador1 = jugadorcopia;
         camello = camellocopia;
         bate = false;
+        trebol = false;
         karate = 3;
         finta = 2; 
         yoga = 5;
@@ -696,6 +712,7 @@ int main() {
         Suerte s4copia(s1, 10);
         Suerte s5copia(s2, 10);
         Suerte s6copia(s3, 10);
+        string eleccion = "default";
         s4 = s4copia;
         s5 = s5copia;
         s6 = s6copia;
@@ -704,6 +721,7 @@ int main() {
         juego = false;
     }
     sleep(1);
+    string eleccion = "default";
   } else {
     break;
   }
